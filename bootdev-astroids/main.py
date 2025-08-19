@@ -36,6 +36,10 @@ def main():
             if i.col_check(player) == True:
                 return print("Game over!")
                 sys.exit[0]
+            for s in group_shots:
+                if s.col_check(i) == True:
+                    s.kill()
+                    i.split()
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
