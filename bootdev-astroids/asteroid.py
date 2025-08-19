@@ -30,3 +30,7 @@ class Asteroid(CircleShape):
             new_asteroid2.velocity = (new_vector2 * 1.2)
         else:
             return
+
+    def score(self, score):
+        score += 1
+        return score

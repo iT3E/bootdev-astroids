@@ -12,6 +12,7 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
+    score = 0
     group_updatable = pygame.sprite.Group()
     group_drawable = pygame.sprite.Group()
     group_asteroids = pygame.sprite.Group()
@@ -40,6 +41,8 @@ def main():
                 if s.col_check(i) == True:
                     s.kill()
                     i.split()
+                    score = i.score(score)
+                    print(f"Score:{score}")
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
