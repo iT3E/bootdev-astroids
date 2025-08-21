@@ -34,3 +34,7 @@ class Asteroid(CircleShape):
     def score(self, score):
         score += 1
         return score
+
+    def remove_life(self, player_life_count):
+        player_life_count -= 1
+        return player_life_count
