@@ -11,6 +11,9 @@ from score import *
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    image = pygame.Surface.convert(pygame.image.load(
+        BACKGROUND_IMAGE))
+    bg = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
     score = 0
@@ -35,7 +38,7 @@ def main():
             if event.type == pygame.QUIT:
                 return
 
-        screen.fill("black")
+        screen.blit(bg, (0, 0))
         for i in group_drawable:
             i.draw(screen)
         group_updatable.update(dt)
