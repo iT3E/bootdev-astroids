@@ -11,6 +11,10 @@ class Player(CircleShape):
         self.rotation = 0
         self.timer = PLAYER_SHOOT_COOLDOWN
         self.player_speed = PLAYER_SPEED
+        self.shot_type = "DEFAULT"
+        self.shot_modifier = "DEFAULT"
+        self.shot_weapon = "DEFAULT"
+        self.player_shoot_cooldown = 0.3
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -60,13 +64,56 @@ class Player(CircleShape):
 
     def shoot(self, dt):
         if self.timer <= 0:
-            shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
-            forward = pygame.Vector2(0, 1).rotate(self.rotation)
-            shot.velocity = forward * PLAYER_SHOOT_SPEED
-            self.timer = PLAYER_SHOOT_COOLDOWN
+            if self.shot_weapon == "SHOTGUN":
+                self.shot_weapon_shotgun()
+            elif self.shot_weapon == "LASERGUN":
+                self.shot_weapon_lasergun()
+            else:
+                self.shot_weapon_default()
+
+    def shot_weapon_lasergun(self):
+        shot = Shot((self.position.x),
+                    (self.position.y), SHOT_RADIUS, "yellow")
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        shot.velocity = forward * PLAYER_SHOOT_SPEED
+        self.timer = 0
+
+    def shot_weapon_shotgun(self):
+        shot = Shot((self.position.x),
+                    (self.position.y), SHOT_RADIUS, "orange")
+        shot2 = Shot((self.position.x - 5),
+                     (self.position.y - 5), SHOT_RADIUS, "orange")
+        shot3 = Shot((self.position.x + 5),
+                     (self.position.y + 5), SHOT_RADIUS, "orange")
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        forward2 = pygame.Vector2(0, 1).rotate(self.rotation - 10)
+        forward3 = pygame.Vector2(0, 1).rotate(self.rotation + 10)
+        shot.velocity = forward * PLAYER_SHOOT_SPEED
+        shot2.velocity = forward2 * PLAYER_SHOOT_SPEED
+        shot3.velocity = forward3 * PLAYER_SHOOT_SPEED
+        self.timer = self.player_shoot_cooldown
+
+    def shot_weapon_default(self):
+        shot = Shot((self.position.x),
+                    (self.position.y), SHOT_RADIUS, "red")
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        shot.velocity = forward * PLAYER_SHOOT_SPEED
+        self.timer = self.player_shoot_cooldown
 
     def boost(self):
         self.player_speed = PLAYER_BOOST_SPEED
 
     def deboost(self):
         self.player_speed = PLAYER_SPEED
+
+    def set_shotgun(self):
+        self.shot_type = "SHOTGUN"
+        self.shot_weapon = "SHOTGUN"
+
+    def set_lasergun(self):
+        self.shot_type = "LASERGUN"
+        self.shot_weapon = "LASERGUN"
+
+    def set_shotspeedincrease(self):
+        if self.player_shoot_cooldown > 0.1:
+            self.player_shoot_cooldown -= 0.1

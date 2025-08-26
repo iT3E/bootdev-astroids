@@ -22,11 +22,13 @@ def main():
     group_drawable = pygame.sprite.Group()
     group_asteroids = pygame.sprite.Group()
     group_shots = pygame.sprite.Group()
+    group_powerups = pygame.sprite.Group()
     Score.containers = (group_drawable, )
     Shot.containers = (group_shots, group_updatable, group_drawable)
     AsteroidField.containers = (group_updatable,)
     Asteroid.containers = (group_asteroids, group_updatable, group_drawable)
     Player.containers = (group_updatable, group_drawable)
+    PowerUp.containers = (group_powerups, group_updatable, group_drawable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroidfield = AsteroidField()
     game_score_display = Score(100, 100, 2, score)
@@ -43,7 +45,7 @@ def main():
             i.draw(screen)
         group_updatable.update(dt)
         for i in group_asteroids:
-            if i.col_check(player) == True:
+            if i.col_check(player):
                 if player_life_count > 0:
                     player_life_count = i.remove_life(player_life_count)
                     player_life_count_display.update_text(
@@ -54,11 +56,28 @@ def main():
                     return print("Game over!")
                     sys.exit[0]
             for s in group_shots:
-                if s.col_check(i) == True:
+                if s.col_check(i):
                     i.split()
                     score = i.score(score)
                     game_score_display.update_text(score)
                     print(f"Score:{score}")
+                    i.powerup()
+        for i in group_powerups:
+            if i.col_check(player):
+                i.kill()
+                # i.shotspeedincrease(player)
+                # i.lasergun(player)
+                # i.shotgun(player)
+                i.poweruptype(player)
+
+                # if i.poweruptype() == shotgun:
+                #     i.shotgun()
+                # if i.poweruptype() == lasergun:
+                #     i.lasergun()
+                # if i.poweruptype() == fastshoot:
+                #     i.fastshoot()
+                # if i.poweruptype() == shieldboost:
+                #     i.shieldboost()
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000

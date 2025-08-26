@@ -2,6 +2,7 @@ import pygame
 import random
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_SPEED, SHOT_RADIUS, PLAYER_SHOOT_COOLDOWN, ASTEROID_MIN_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
 from circleshape import CircleShape
+from powerup import PowerUp
 
 
 class Asteroid(CircleShape):
@@ -37,7 +38,7 @@ class Asteroid(CircleShape):
             new_asteroid1.velocity = (new_vector1 * 1.2)
             new_asteroid2.velocity = (new_vector2 * 1.2)
         else:
-            return
+            return None
 
     def score(self, score):
         score += 1
@@ -46,3 +47,13 @@ class Asteroid(CircleShape):
     def remove_life(self, player_life_count):
         player_life_count -= 1
         return player_life_count
+
+    def powerup(self):
+        random_angle = random.uniform(20, 50)
+        random_value = random.randrange(0, 100)
+        new_vector = self.velocity.rotate(random_angle)
+        if random_value in range(0, 9):
+            power_up = PowerUp(*self.position, self.radius)
+            power_up.velocity = (new_vector * 1.2)
+        else:
+            return None
