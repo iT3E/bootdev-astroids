@@ -65,20 +65,7 @@ def main():
         for i in group_powerups:
             if i.col_check(player):
                 i.kill()
-                # i.shotspeedincrease(player)
-                # i.lasergun(player)
-                # i.shotgun(player)
                 i.poweruptype(player)
-
-                # if i.poweruptype() == shotgun:
-                #     i.shotgun()
-                # if i.poweruptype() == lasergun:
-                #     i.lasergun()
-                # if i.poweruptype() == fastshoot:
-                #     i.fastshoot()
-                # if i.poweruptype() == shieldboost:
-                #     i.shieldboost()
-
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
