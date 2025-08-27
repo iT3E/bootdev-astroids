@@ -11,9 +11,27 @@ class Asteroid(CircleShape):
         self.x = x
         self.y = y
         self.radius = radius
+        self.rotation = 0
+        self.lumpy_points = self.generate_lumpy_asteroid()
+
+    def generate_lumpy_asteroid(self):
+        points = []
+        num_points = random.randint(8, 12)
+        for i in range(num_points):
+            angle = (360 / num_points) * i + random.uniform(-20, 20)
+            distance = self.radius * random.uniform(0.7, 1.3)
+            direction = pygame.Vector2(0, 1).rotate(angle)
+            point = direction * distance
+            points.append(point)
+        return points
 
     def draw(self, screen):
-        return pygame.draw.circle(screen, "white", self.position, 2)
+        transformed_points = []
+        for point in self.lumpy_points:
+            rotated_point = point.rotate(self.rotation)
+            final_point = self.position + rotated_point
+            transformed_points.append(final_point)
+        return pygame.draw.polygon(screen, "white", transformed_points, 2)
 
     def update(self, dt):
         self.position += (self.velocity * dt)
