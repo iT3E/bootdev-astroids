@@ -2,6 +2,7 @@ import pygame
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_SPEED, SHOT_RADIUS, PLAYER_SHOOT_COOLDOWN, PLAYER_BOOST_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT
 from circleshape import CircleShape
 from shot import Shot
+from bomb import Bomb
 
 
 class Player(CircleShape):
@@ -33,8 +34,11 @@ class Player(CircleShape):
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
+        mouse = pygame.mouse.get_pressed()
         self.timer -= dt
 
+        if mouse[2]:
+            self.drop_bomb(dt)
         if keys[pygame.K_w]:
             self.move(dt)
         if keys[pygame.K_a]:
@@ -70,6 +74,23 @@ class Player(CircleShape):
                 self.shot_weapon_lasergun()
             else:
                 self.shot_weapon_default()
+
+    def drop_bomb(self, dt):
+        if self.timer <= 0:
+            self.bomb_default()
+        # if self.bomb_one == "BOMBONE":
+        #     self.bomb_one_shotgun()
+        # elif self.bomb_two == "BOMBTWO":
+        #     self.bomb_two_lasergun()
+        # else:
+        #     self.bomb_default()
+
+    def bomb_default(self):
+        bomb = Bomb((self.position.x),
+                    (self.position.y), SHOT_RADIUS, "purple")
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        bomb.velocity = forward * PLAYER_SHOOT_SPEED
+        self.timer = self.player_shoot_cooldown
 
     def shot_weapon_lasergun(self):
         shot = Shot((self.position.x),
