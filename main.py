@@ -6,6 +6,7 @@ from asteroid import *
 from asteroidfield import *
 from shot import *
 from score import *
+from bomb import *
 
 
 def main():
@@ -18,6 +19,7 @@ def main():
     dt = 0
     score = 0
     player_life_count = 3
+    bomb_count = 0
     group_updatable = pygame.sprite.Group()
     group_drawable = pygame.sprite.Group()
     group_asteroids = pygame.sprite.Group()
@@ -25,7 +27,7 @@ def main():
     group_powerups = pygame.sprite.Group()
     group_bomb = pygame.sprite.Group()
     Score.containers = (group_drawable, )
-    Bomb.containers = (group_shots, group_updatable, group_drawable)
+    Bomb.containers = (group_bomb, group_updatable, group_drawable)
     Shot.containers = (group_shots, group_updatable, group_drawable)
     AsteroidField.containers = (group_updatable,)
     Asteroid.containers = (group_asteroids, group_updatable, group_drawable)
@@ -33,9 +35,11 @@ def main():
     PowerUp.containers = (group_powerups, group_updatable, group_drawable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroidfield = AsteroidField()
-    game_score_display = Score(100, 100, 2, score)
+    game_score_display = Score(100, 100, 2, f"Score: {score}")
     player_life_count_display = Score(
-        150, 150, 1, f"Lives Remaining: {player_life_count}")
+        100, 150, 1, f"Lives Remaining: {player_life_count}")
+    bomb_count_display = Score(
+        100, 200, 1, f"Bombs Remaining: {bomb_count}")
 
     while True:
         for event in pygame.event.get():
@@ -64,10 +68,18 @@ def main():
                     game_score_display.update_text(score)
                     print(f"Score:{score}")
                     i.powerup()
+        for b in group_bomb:
+            if b.is_detonated:
+                for a in group_asteroids:
+                    if b.col_check(a):
+                        a.split()
+                        score = a.score(score)
+                        game_score_display.update_text(score)
         for i in group_powerups:
             if i.col_check(player):
                 i.kill()
                 i.poweruptype(player)
+
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 

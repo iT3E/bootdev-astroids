@@ -16,6 +16,9 @@ class Player(CircleShape):
         self.shot_modifier = "DEFAULT"
         self.shot_weapon = "DEFAULT"
         self.player_shoot_cooldown = 0.3
+        self.player_bomb_cooldown = 3
+        self.active_bomb = None
+        self.mouse_was_pressed = False
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -36,9 +39,16 @@ class Player(CircleShape):
         keys = pygame.key.get_pressed()
         mouse = pygame.mouse.get_pressed()
         self.timer -= dt
+        mouse_clicked = mouse[2] and not self.mouse_was_pressed
 
-        if mouse[2]:
+        if mouse_clicked and self.active_bomb is None:
             self.drop_bomb(dt)
+        elif mouse_clicked and self.active_bomb and not self.active_bomb.is_detonated:
+            self.active_bomb.detonate()
+            self.active_bomb = None
+
+        self.mouse_was_pressed = mouse[2]
+
         if keys[pygame.K_w]:
             self.move(dt)
         if keys[pygame.K_a]:
@@ -53,6 +63,9 @@ class Player(CircleShape):
             self.boost()
         else:
             self.deboost()
+
+        if self.active_bomb and not self.active_bomb.alive():
+            self.active_bomb = None
 
     def move(self, dt):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -76,8 +89,8 @@ class Player(CircleShape):
                 self.shot_weapon_default()
 
     def drop_bomb(self, dt):
-        if self.timer <= 0:
-            self.bomb_default()
+        if self.timer <= 0 and self.active_bomb is None:
+            self.active_bomb = self.bomb_default()
         # if self.bomb_one == "BOMBONE":
         #     self.bomb_one_shotgun()
         # elif self.bomb_two == "BOMBTWO":
@@ -86,11 +99,11 @@ class Player(CircleShape):
         #     self.bomb_default()
 
     def bomb_default(self):
-        bomb = Bomb((self.position.x),
-                    (self.position.y), SHOT_RADIUS, "purple")
+        bomb = Bomb(self.position.x, self.position.y, 10, "purple")
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
-        bomb.velocity = forward * PLAYER_SHOOT_SPEED
-        self.timer = self.player_shoot_cooldown
+        bomb.velocity = forward * (PLAYER_SHOOT_SPEED - 400)
+        self.timer = self.player_bomb_cooldown
+        return bomb
 
     def shot_weapon_lasergun(self):
         shot = Shot((self.position.x),
